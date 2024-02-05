@@ -1,7 +1,7 @@
 name: hello world
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, feature/setup_action]
 jobs:
   say-hello:
     runs-on: ubuntu-latest
