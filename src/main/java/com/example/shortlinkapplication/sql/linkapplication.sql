@@ -13,7 +13,8 @@ GO
 
 CREATE TABLE [user] (
   userID INT IDENTITY(1,1) PRIMARY KEY,
-  name NVARCHAR(20),
+  firstName NVARCHAR(20),
+  lastName NVARCHAR(20),
   email VARCHAR(32),
   creationDate DATETIME,
   lastLogin DATETIME

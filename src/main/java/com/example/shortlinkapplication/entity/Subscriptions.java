@@ -30,6 +30,4 @@ public class Subscriptions {
     @Column(name = "remainingTime")
     private Integer remainingTime;
 
-
-
 }
