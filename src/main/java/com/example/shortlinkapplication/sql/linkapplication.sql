@@ -76,7 +76,7 @@ CREATE TABLE subscriptions (
   address VARCHAR(255),
   startDate DATETIME,
   endDate DATETIME,
-  remainingTime DATETIME
+  remainingTime INT
   FOREIGN KEY (userID) REFERENCES [user](userID)
 );
 
