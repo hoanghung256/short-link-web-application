@@ -25,6 +25,9 @@ public class User implements UserDetails {
     @Column(name = "email", length = 32)
     private String email;
 
+    @Column(name = "password", length = 30)
+    private String password;
+
     @Column(name = "creationDate")
     private Date creationDate;
 
