@@ -9,6 +9,7 @@ import java.util.Date;
 @Data
 @Table(name = "analytics")
 public class Analytics {
+    @Id
     @Column(name = "chartID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer chartID;
@@ -19,17 +20,14 @@ public class Analytics {
     @Column(name = "timeClick")
     private Date timeClick;
 
-    @Column(name = "locationID")
     @ManyToOne
     @JoinColumn(name = "locationID")
     private Locations locationID;
 
-    @Column(name = "deviceID")
     @ManyToOne
     @JoinColumn(name = "devices")
     private Devices deviceID;
 
-    @Column(name = "projectID")
     @ManyToOne
     @JoinColumn(name = "projectID")
     private Project projectID;

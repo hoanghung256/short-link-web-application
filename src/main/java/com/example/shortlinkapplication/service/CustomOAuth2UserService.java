@@ -23,12 +23,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) {
         OAuth2User oAuth2User = super.loadUser(userRequest);
-
         String email = oAuth2User.getAttribute("email");
         String firstName = oAuth2User.getAttribute("given_name");
         String lastName = oAuth2User.getAttribute("family_name");
 
         User user = userRepository.findByEmail(email);
+        System.out.println(user);
         if (user == null) {
             user = new User();
             user.setEmail(email);
@@ -36,6 +36,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user.setLastName(lastName);
             userRepository.save(user);
         }
+        System.out.println("save");
         return new DefaultOAuth2User(Collections.emptySet(), oAuth2User.getAttributes(), "email");
         }
 }

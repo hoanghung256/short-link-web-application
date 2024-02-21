@@ -10,16 +10,17 @@ import java.util.Date;
 
 @Entity
 @Data
-@Table(name = "user")
+@Table(name = "user_account")
 public class User implements UserDetails {
+    @Id
     @Column(name = "userID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userID;
 
-    @Column(name = "firstName", length = 20)
+    @Column(name = "first_name", length = 20)
     private String firstName;
 
-    @Column(name = "lastName", length = 20)
+    @Column(name = "last_name", length = 20)
     private String lastName;
 
     @Column(name = "email", length = 32)
@@ -28,21 +29,15 @@ public class User implements UserDetails {
     @Column(name = "password", length = 30)
     private String password;
 
-    @Column(name = "creationDate")
-    private Date creationDate;
-
-    @Column(name = "lastLogin")
-    private Date lastLogin;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }
 
-    @Override
-    public String getPassword() {
-        return null;
-    }
+//    @Override
+//    public String getPassword() {
+//        return null;
+//    }
 
     @Override
     public String getUsername() {

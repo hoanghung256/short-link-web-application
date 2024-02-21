@@ -9,11 +9,11 @@ import java.util.Date;
 @Data
 @Table(name = "subscriptions")
 public class Subscriptions {
+    @Id
     @Column(name = "subscriptionID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer subscriptionID;
 
-    @Column(name = "userID")
     @ManyToOne
     @JoinColumn(name = "userID")
     private User userID;

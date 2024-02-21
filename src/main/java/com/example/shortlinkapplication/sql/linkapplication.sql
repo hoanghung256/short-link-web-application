@@ -11,7 +11,7 @@ IF NOT EXISTS (
 CREATE DATABASE linkapplication
 GO
 
-CREATE TABLE [user] (
+CREATE TABLE [user_account] (
   userID INT IDENTITY(1,1) PRIMARY KEY,
   firstName NVARCHAR(20),
   lastName NVARCHAR(20),
@@ -26,7 +26,7 @@ CREATE TABLE url (
   creationDate DATETIME,
   expirationDate DATETIME,
   userID INT,
-  FOREIGN KEY (userID) REFERENCES [user](userID)
+  FOREIGN KEY (userID) REFERENCES [user_account](userID)
 );
 
 CREATE TABLE project (
@@ -78,7 +78,7 @@ CREATE TABLE subscriptions (
   startDate DATETIME,
   endDate DATETIME,
   remainingTime INT
-  FOREIGN KEY (userID) REFERENCES [user](userID)
+  FOREIGN KEY (userID) REFERENCES [user_account](userID)
 );
 
 

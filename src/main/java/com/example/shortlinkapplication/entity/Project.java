@@ -9,6 +9,7 @@ import java.util.Date;
 @Data
 @Table(name = "project")
 public class Project {
+    @Id
     @Column(name = "projectID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer projectID;
@@ -22,7 +23,6 @@ public class Project {
     @Column(name = "creationDate")
     private Date creationDate;
 
-    @Column(name = "shortLink", length = 16)
     @ManyToOne
     @JoinColumn(name = "shortLink")
     private Url shortLink;

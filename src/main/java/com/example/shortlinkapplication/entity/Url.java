@@ -9,6 +9,7 @@ import java.util.Date;
 @Data
 @Table(name = "url")
 public class Url {
+    @Id
     @Column(name = "shortLink", length = 16)
     private String shortLink;
 
@@ -21,7 +22,6 @@ public class Url {
     @Column(name = "expirationDate")
     private Date expirationDate;
 
-    @Column(name = "user")
     @ManyToOne(fetch = FetchType.LAZY) // fetch type LAZY is default
     @JoinColumn(name = "userID")
     private User userID;

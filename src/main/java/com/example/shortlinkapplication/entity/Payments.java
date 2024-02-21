@@ -9,6 +9,7 @@ import java.util.Date;
 @Data
 @Table(name = "payments")
 public class Payments {
+    @Id
     @Column(name = "transactionID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer transactionID;
