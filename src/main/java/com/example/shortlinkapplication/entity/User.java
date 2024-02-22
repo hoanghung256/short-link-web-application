@@ -17,11 +17,8 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userID;
 
-    @Column(name = "first_name", length = 20)
-    private String firstName;
-
-    @Column(name = "last_name", length = 20)
-    private String lastName;
+    @Column(name = "name", length = 20)
+    private String name;
 
     @Column(name = "email", length = 32)
     private String email;
