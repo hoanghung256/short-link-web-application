@@ -23,20 +23,22 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) {
         OAuth2User oAuth2User = super.loadUser(userRequest);
+        System.out.println("loadUser: " + oAuth2User);
         String email = oAuth2User.getAttribute("email");
-        String firstName = oAuth2User.getAttribute("given_name");
-        String lastName = oAuth2User.getAttribute("family_name");
-
-        User user = userRepository.findByEmail(email);
-        System.out.println(user);
-        if (user == null) {
-            user = new User();
-            user.setEmail(email);
-            user.setFirstName(firstName);
-            user.setLastName(lastName);
-            userRepository.save(user);
+        if (email == null) {
+            email = oAuth2User.getAttribute("login");
         }
-        System.out.println("save");
-        return new DefaultOAuth2User(Collections.emptySet(), oAuth2User.getAttributes(), "email");
+
+        // check provider of social
+        String provider = userRequest.getClientRegistration().getRegistrationId();
+        String nameAttributeKey;
+        if (provider.equals("google")) {
+            nameAttributeKey = "email";
+        } else if (provider.equals("github")) {
+            nameAttributeKey = "login";
+        } else {
+            throw new IllegalArgumentException("Unsupported provider " + provider);
+        }
+        return new DefaultOAuth2User(Collections.emptySet(), oAuth2User.getAttributes(), nameAttributeKey);
         }
 }

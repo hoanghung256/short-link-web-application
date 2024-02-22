@@ -7,6 +7,7 @@ import com.example.shortlinkapplication.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -42,8 +44,10 @@ public class SecurityConfig {
                         .requestMatchers("/").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth -> oauth
+                        .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
                         .successHandler(authenticationSuccessHandler())
-                        .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService)));
+                );
+
         System.out.println("Finish");
         return http.build();
     }
@@ -55,33 +59,41 @@ public class SecurityConfig {
 
             @Override
             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                String targetUrl = determineTargetUrl(authentication);
+                String targetUrl = determineTargetUrl(authentication, request);
                 redirectStrategy.sendRedirect(request, response, targetUrl);
             }
 
-            private String determineTargetUrl(Authentication authentication) {
-                DefaultOidcUser oidcUser = (DefaultOidcUser) authentication.getPrincipal();
+            private String determineTargetUrl(Authentication authentication, HttpServletRequest request) {
+                System.out.println("Start determine.....");
+                Object principal = authentication.getPrincipal();
+                String email;
+                String name;
 
-                System.out.println("loadUser working.....");
-                String email = oidcUser.getAttribute("email");
-                String firstName = oidcUser.getAttribute("given_name");
-                String lastName = oidcUser.getAttribute("family_name");
+                if (principal instanceof DefaultOidcUser oidcUser) {
+                    email = oidcUser.getAttribute("email");
+                    name = oidcUser.getAttribute("name");
+                } else if (principal instanceof DefaultOAuth2User oAuth2User) {
+                    email = oAuth2User.getAttribute("login");
+                    name = oAuth2User.getAttribute("name");
+                } else {
+                    throw new IllegalArgumentException("Authentication principal is not of a recognized type.");
+                }
                 System.out.println(email);
-                System.out.println(firstName);
 
                 User user = userRepository.findByEmail(email);
-                System.out.println(user);
                 if (user == null) {
+                    System.out.println("Saving user,.....");
                     user = new User();
                     user.setEmail(email);
-                    user.setFirstName(firstName);
-                    user.setLastName(lastName);
+                    user.setName(name);
                     userRepository.save(user);
-                    System.out.println("Saved");
-                    return "/user/" + user.getUserID();
-                } else {
-                    return "/home/" + user.getUserID();
+                    System.out.println(user);
                 }
+                HttpSession session = request.getSession();
+                session.setAttribute("user", user);
+                System.out.println(user);
+                return "/home/" + user.getUserID();
+
             }
         };
 
