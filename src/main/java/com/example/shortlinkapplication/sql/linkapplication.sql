@@ -82,7 +82,7 @@ CREATE TABLE subscriptions (
 );
 CREATE TABLE [dbo].[confirm_token]
 (
-    [Id] INT NOT NULL PRIMARY KEY, -- Primary Key column
+    [Id] INT IDENTITY(1,1) PRIMARY KEY, -- Primary Key column
     [token] VARCHAR(MAX) NOT NULL,
     [created_at] DATETIME NOT NULL,
     [expired_at] DATETIME NOT NULL,
