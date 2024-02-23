@@ -80,5 +80,13 @@ CREATE TABLE subscriptions (
   remainingTime INT
   FOREIGN KEY (userID) REFERENCES [user_account](userID)
 );
+CREATE TABLE [dbo].[confirm_token]
+(
+    [Id] INT NOT NULL PRIMARY KEY, -- Primary Key column
+    [token] VARCHAR(MAX) NOT NULL,
+    [created_at] DATETIME NOT NULL,
+    [expired_at] DATETIME NOT NULL,
+    [confirmed_at] DATETIME NOT NULL
+);
 
 
