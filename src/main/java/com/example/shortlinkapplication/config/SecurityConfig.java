@@ -2,8 +2,8 @@ package com.example.shortlinkapplication.config;
 
 import com.example.shortlinkapplication.entity.User;
 import com.example.shortlinkapplication.repository.UserRepository;
-import com.example.shortlinkapplication.service.CustomOAuth2UserService;
 import com.example.shortlinkapplication.service.UserService;
+import com.example.shortlinkapplication.service.CustomOAuth2UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -21,7 +22,7 @@ import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
 
@@ -33,25 +34,40 @@ public class SecurityConfig {
     private CustomOAuth2UserService oAuth2UserService;
     @Autowired
     private UserRepository userRepository;
-
+    @Autowired
+    private final UserService userService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         System.out.println("Start filer chain");
         http
-                .csrf(c -> c.csrfTokenRepository((CookieCsrfTokenRepository.withHttpOnlyFalse())))
+                .csrf(AbstractHttpConfigurer::disable)
+//                .csrf(c -> c.csrfTokenRepository((CookieCsrfTokenRepository.withHttpOnlyFalse())))
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/**").permitAll()
+                        .requestMatchers("/signin").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
                         .successHandler(authenticationSuccessHandler())
-                );
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                ;
 
         System.out.println("Finish");
         return http.build();
     }
-
+//    @Autowired
+//    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.userDetailsService(userService);
+//    }
+//    @Bean
+//    public AuthenticationProvider authenticationProvider() {
+//        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+//        authenticationProvider.setUserDetailsService(userService);
+//        return authenticationProvider;
+//    }
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         return new AuthenticationSuccessHandler() {
