@@ -7,11 +7,17 @@ import com.example.shortlinkapplication.entity.ConfirmationToken;
 import com.example.shortlinkapplication.entity.User;
 import com.example.shortlinkapplication.repository.ConfirmationTokenRepository;
 import com.example.shortlinkapplication.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 @Service
@@ -66,7 +72,7 @@ public class LoginService {
     // validate confirm token - update confirmed at column
     // using @transactional for update db
     @Transactional
-    public String confirmToken(String token) {
+    public Boolean confirmToken(String token, HttpServletRequest request) {
         ConfirmationToken confirmationToken = confirmationTokenService.getToken(token);
         if (confirmationToken == null) {
             throw new IllegalStateException("token not found");
@@ -79,7 +85,20 @@ public class LoginService {
             throw new IllegalStateException("token expired");
         }
         confirmationTokenService.setConfirmedAt(token);
-        return "confirmed";
+        HttpSession session = request.getSession();
+        session.setAttribute("userID", confirmationToken.getUserID());
+        redirectToHome(confirmationToken.getUserID().getUserID());
+        return true;
+    }
+    private void redirectToHome(Integer userID) {
+        // Construct the redirect URL dynamically
+        String redirectUrl = "/home/" + userID;
+        try {
+            HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+            response.sendRedirect(redirectUrl);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to redirect to " + redirectUrl);
+        }
     }
 
     @Transactional
@@ -87,6 +106,7 @@ public class LoginService {
         return "<p>Hello,</p>"
                 + "<p>Please click on the link below to verify your email and complete the sign-in process:</p>"
                 + "<a href=\"" + link + "\">Verify Email</a>"
+//                + link
                 + "<p>Thank you!</p>";
     }
 
