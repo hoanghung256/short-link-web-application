@@ -3,6 +3,7 @@ package com.example.shortlinkapplication.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -10,19 +11,21 @@ import java.util.Date;
 @Table(name = "url")
 public class Url {
     @Id
-    @Column(name = "shortLink", length = 16)
-    private String shortLink;
+    @Column(name = "short_url", length = 16)
+    private String shortUrl;
 
-    @Column(name = "originalURL")
-    private String originalURL;
+    @Column(name = "long_url")
+    private String longUrl;
 
-    @Column(name = "creationDate")
-    private Date createtionDate;
+    @Column(name = "create_date")
+    private LocalDate creationDate;
 
-    @Column(name = "expirationDate")
-    private Date expirationDate;
+    @Column(name = "expire_date")
+    private LocalDate expirationDate;
 
     @ManyToOne(fetch = FetchType.LAZY) // fetch type LAZY is default
     @JoinColumn(name = "userID")
     private User userID;
+
+
 }
