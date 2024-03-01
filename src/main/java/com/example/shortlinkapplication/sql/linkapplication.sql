@@ -13,11 +13,12 @@ GO
 
 CREATE TABLE [user_account] (
   userID INT IDENTITY(1,1) PRIMARY KEY,
-  firstName NVARCHAR(20),
-  lastName NVARCHAR(20),
+  name NVARCHAR(20),
   email VARCHAR(32),
-  creationDate DATETIME,
-  lastLogin DATETIME
+  password VARCHAR(50),
+  auth_provider VARCHAR(50),
+  email_verified BIT,
+  provider_id VARCHAR(50)
 );
 
 CREATE TABLE url (
