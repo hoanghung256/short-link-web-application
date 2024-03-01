@@ -2,12 +2,16 @@ package com.example.shortlinkapplication.service;
 
 import com.example.shortlinkapplication.entity.User;
 import com.example.shortlinkapplication.repository.UserRepository;
+import com.example.shortlinkapplication.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.ResourceAccessException;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +23,12 @@ public class UserService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        return user;
+        return UserPrincipal.create(user);
+    }
+
+    @Transactional
+    public UserDetails loadUserById(Integer id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceAccessException("User"));
+        return UserPrincipal.create(user);
     }
 }

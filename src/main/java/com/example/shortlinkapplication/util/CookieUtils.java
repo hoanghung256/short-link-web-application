@@ -6,15 +6,18 @@ import com.esotericsoftware.kryo.io.Output;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
+import org.springframework.util.SerializationUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Base64;
 import java.util.Optional;
 
+@Component
 public class CookieUtils {
     private static final Kryo kryo = new Kryo();
-    public Optional<Cookie> getCookie(HttpServletRequest request, String name) {
+    public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();
 
         if (cookies != null) {
@@ -27,7 +30,7 @@ public class CookieUtils {
         return Optional.empty();
     }
 
-    public void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
+    public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
@@ -35,7 +38,7 @@ public class CookieUtils {
         response.addCookie(cookie);
     }
 
-    public void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
+    public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
@@ -49,19 +52,14 @@ public class CookieUtils {
         }
     }
 
-    public String serialize(Object object) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        try (Output output = new Output(stream)) {
-            kryo.writeObject(output, object);
-        }
-        return Base64.getUrlEncoder().encodeToString(stream.toByteArray());
+    public static String serialize(Object object) {
+        return Base64.getUrlEncoder()
+                .encodeToString(SerializationUtils.serialize(object));
     }
 
-    public <T> T deserialize(Cookie cookie, Class<T> cls) {
-        byte[] bytes = Base64.getUrlDecoder().decode(cookie.getValue());
-        Input input = new Input(new ByteArrayInputStream(bytes));
-        T object = kryo.readObject(input, cls);
-        return object;
+    public static <T> T deserialize(Cookie cookie, Class<T> cls) {
+        return cls.cast(SerializationUtils.deserialize(
+                Base64.getUrlDecoder().decode(cookie.getValue())));
     }
 
 }

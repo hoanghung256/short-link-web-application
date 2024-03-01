@@ -6,12 +6,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Date;
 
 @Entity
 @Data
 @Table(name = "user_account")
-public class User implements UserDetails {
+public class User implements UserDetails{
     @Id
     @Column(name = "userID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,18 +22,25 @@ public class User implements UserDetails {
     @Column(name = "email", length = 32)
     private String email;
 
-    @Column(name = "password", length = 30)
-    private String password;
+    @Column(name = "email_verified")
+    private Boolean emailVerified = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "auth_provider")
+    private AuthProvider authProvider;
+    @Column(name = "provider_id")
+    private String providerId;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }
 
-//    @Override
-//    public String getPassword() {
-//        return null;
-//    }
+    @Override
+    public String getPassword() {
+        return null;
+    }
 
     @Override
     public String getUsername() {

@@ -7,11 +7,18 @@ import com.example.shortlinkapplication.entity.ConfirmationToken;
 import com.example.shortlinkapplication.entity.User;
 import com.example.shortlinkapplication.repository.ConfirmationTokenRepository;
 import com.example.shortlinkapplication.repository.UserRepository;
+import com.example.shortlinkapplication.security.TokenProvider;
+import com.example.shortlinkapplication.security.oauth.OAuth2AuthenticationSuccessHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -34,6 +41,10 @@ public class LoginService {
     private EmailSender emailSender;
     @Autowired
     private JWTService jwtService;
+    @Autowired
+    private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     // Regex to validate email - using test() method in EmailValidator
     public LoginResponse signin(LoginRequest loginRequest) {
@@ -46,7 +57,8 @@ public class LoginService {
             throw new IllegalArgumentException("No user registered! Please Sign Up!");
         }
         LoginResponse loginResponse = createToken(user);
-        String link = "http://localhost:8081/signin/confirm?token=" + loginResponse.getToken();
+        System.out.println("Creating token,...");
+        String link = "http://localhost:8080/auth/loginWithToken/confirm?token=" + loginResponse.getToken();
         emailSender.send(
                 loginRequest.getEmail(),
                 buildEmail(link));
@@ -55,7 +67,7 @@ public class LoginService {
 
     // create confirmation token
     public LoginResponse createToken(User user) {
-        var jwt = jwtService.generateToken(user);
+        var jwt = jwtService.generateToken((UserDetails) user);
         System.out.println("Print JWT: " + jwt);
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setToken(jwt);
@@ -72,7 +84,7 @@ public class LoginService {
     // validate confirm token - update confirmed at column
     // using @transactional for update db
     @Transactional
-    public Boolean confirmToken(String token, HttpServletRequest request) {
+    public Boolean confirmToken(String token, HttpServletRequest request, HttpServletResponse response) {
         ConfirmationToken confirmationToken = confirmationTokenService.getToken(token);
         if (confirmationToken == null) {
             throw new IllegalStateException("token not found");
@@ -106,7 +118,7 @@ public class LoginService {
         return "<p>Hello,</p>"
                 + "<p>Please click on the link below to verify your email and complete the sign-in process:</p>"
                 + "<a href=\"" + link + "\">Verify Email</a>"
-//                + link
+                //+ link
                 + "<p>Thank you!</p>";
     }
 

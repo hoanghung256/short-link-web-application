@@ -2,8 +2,13 @@ package com.example.shortlinkapplication.config;
 
 import com.example.shortlinkapplication.entity.User;
 import com.example.shortlinkapplication.repository.UserRepository;
+import com.example.shortlinkapplication.security.EmailAuthenticationFilter;
+import com.example.shortlinkapplication.security.TokenAuthenticationFilter;
+import com.example.shortlinkapplication.security.oauth.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.example.shortlinkapplication.security.oauth.OAuth2AuthenticationFailureHandler;
+import com.example.shortlinkapplication.security.oauth.OAuth2AuthenticationSuccessHandler;
 import com.example.shortlinkapplication.service.UserService;
-import com.example.shortlinkapplication.service.CustomOAuth2UserService;
+import com.example.shortlinkapplication.security.oauth.CustomOAuth2UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,9 +17,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -23,95 +36,75 @@ import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
     @Autowired
     private CustomOAuth2UserService oAuth2UserService;
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
     @Autowired
-    private final UserService userService;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    @Lazy
+    private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    @Autowired
+    @Lazy
+    private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Bean
+    public TokenAuthenticationFilter tokenAuthenticationFilter() {
+        return new TokenAuthenticationFilter();
+    }
+
+    @Bean
+    public HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository() {
+        return new HttpCookieOAuth2AuthorizationRequestRepository();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userService);
+        return provider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager() throws Exception {
+        return new ProviderManager(Collections.singletonList(authenticationProvider()));
+    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         System.out.println("Start filer chain");
         http
                 .csrf(AbstractHttpConfigurer::disable)
-//                .csrf(c -> c.csrfTokenRepository((CookieCsrfTokenRepository.withHttpOnlyFalse())))
+                .formLogin(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/**").permitAll()
-                        .requestMatchers("/signin").permitAll()
+                        .requestMatchers("/auth/**","/oauth2/**","/signin").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth -> oauth
+                        .authorizationEndpoint(auth -> auth.baseUri("/oauth2/authorize")
+                                .authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository())
+                        )
+                        .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
                         .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
-                        .successHandler(authenticationSuccessHandler())
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler(oAuth2AuthenticationFailureHandler)
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                ;
+                .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new EmailAuthenticationFilter(new AntPathRequestMatcher("/login", "POST")), UsernamePasswordAuthenticationFilter.class);
 
         System.out.println("Finish");
         return http.build();
     }
-//    @Autowired
-//    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.userDetailsService(userService);
-//    }
-//    @Bean
-//    public AuthenticationProvider authenticationProvider() {
-//        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-//        authenticationProvider.setUserDetailsService(userService);
-//        return authenticationProvider;
-//    }
-    @Bean
-    public AuthenticationSuccessHandler authenticationSuccessHandler() {
-        return new AuthenticationSuccessHandler() {
-            private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy(); // sendRedirect()
 
-            @Override
-            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                String targetUrl = determineTargetUrl(authentication, request);
-                redirectStrategy.sendRedirect(request, response, targetUrl);
-            }
 
-            private String determineTargetUrl(Authentication authentication, HttpServletRequest request) {
-                System.out.println("Start determine.....");
-                Object principal = authentication.getPrincipal();
-                String email;
-                String name;
-
-                if (principal instanceof DefaultOidcUser oidcUser) {
-                    email = oidcUser.getAttribute("email");
-                    name = oidcUser.getAttribute("name");
-                } else if (principal instanceof DefaultOAuth2User oAuth2User) {
-                    email = oAuth2User.getAttribute("login");
-                    name = oAuth2User.getAttribute("name");
-                } else {
-                    throw new IllegalArgumentException("Authentication principal is not of a recognized type.");
-                }
-                System.out.println(email);
-
-                User user = userRepository.findByEmail(email);
-                if (user == null) {
-                    System.out.println("Saving user,.....");
-                    user = new User();
-                    user.setEmail(email);
-                    user.setName(name);
-                    userRepository.save(user);
-                    System.out.println(user);
-                }
-                HttpSession session = request.getSession();
-                session.setAttribute("user", user);
-                System.out.println(user);
-                return "/home/" + user.getUserID();
-
-            }
-        };
-
-    }
 }

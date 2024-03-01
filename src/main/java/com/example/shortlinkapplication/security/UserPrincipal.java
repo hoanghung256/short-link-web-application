@@ -6,6 +6,7 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Map;
@@ -28,9 +29,10 @@ public class UserPrincipal implements OAuth2User, UserDetails {
                 user.getEmail()
         );
     }
-    public UserPrincipal create(User user, Map<String, Object> attributes) {
+    public static UserPrincipal create(User user, Map<String, Object> attributes) {
         UserPrincipal userPrincipal = UserPrincipal.create(user);
         userPrincipal.setAttributes(attributes);
+        System.out.println(userPrincipal);
         return userPrincipal;
     }
 
