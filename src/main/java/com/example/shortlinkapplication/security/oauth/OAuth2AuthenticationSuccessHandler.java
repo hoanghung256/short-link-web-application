@@ -26,9 +26,9 @@ import static com.example.shortlinkapplication.security.oauth.HttpCookieOAuth2Au
 
 @Component
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    private TokenProvider tokenProvider;
-    private AppProperties appProperties;
-    private HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+    private final TokenProvider tokenProvider;
+    private final AppProperties appProperties;
+    private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
     @Autowired
     OAuth2AuthenticationSuccessHandler(TokenProvider tokenProvider, AppProperties appProperties,
@@ -42,8 +42,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         System.out.println("Doing success handler....");
         String targetUrl = determineTargetUrl(request, response, authentication);
 
-        clearAuthenticationAttributes(request, response);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
+        clearAuthenticationAttributes(request, response);
     }
 
     protected String determineTargetUrl (HttpServletRequest request, HttpServletResponse response, Authentication authentication) {

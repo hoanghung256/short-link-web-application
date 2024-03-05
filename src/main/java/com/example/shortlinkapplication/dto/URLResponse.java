@@ -10,8 +10,4 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class URLResponse {
     private String url;
-    private LocalDate expiresDate;
-
-    public URLResponse() {
-    }
 }

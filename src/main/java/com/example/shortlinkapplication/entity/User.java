@@ -22,14 +22,18 @@ public class User implements UserDetails{
     @Column(name = "email", length = 32)
     private String email;
 
-    @Column(name = "email_verified")
-    private Boolean emailVerified = false;
+//    @Column(name = "email_verified")
+//    private Boolean emailVerified = true;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "auth_provider")
     private AuthProvider authProvider;
+
     @Column(name = "provider_id")
     private String providerId;
+
+    @Column(name = "token")
+    private String token;
 
 
     @Override
