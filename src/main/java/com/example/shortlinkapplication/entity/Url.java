@@ -34,7 +34,7 @@ public class Url {
   @Column(name = "expire_date")
   private LocalDate expirationDate;
 
-  @ManyToOne(fetch = FetchType.LAZY) // fetch type LAZY is default
+  @ManyToOne(fetch = FetchType.EAGER) // fetch type LAZY is default
   @JoinColumn(name = "projectID")
   private Project projectID;
 

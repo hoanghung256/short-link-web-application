@@ -5,6 +5,7 @@ import com.example.shortlinkapplication.entity.Project;
 import com.example.shortlinkapplication.entity.Url;
 import com.example.shortlinkapplication.repository.ProjectRepository;
 import com.example.shortlinkapplication.repository.URLRepository;
+import com.example.shortlinkapplication.repository.UrlUpdateRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,6 +93,21 @@ public class UrlServiceImpl implements UrlService {
       return url.getLongUrl();
     }
     return null;
+  }
+
+  @Override
+  public Url updateLongUrl(UrlUpdateRequest request) {
+    Optional<Url> optionalUrl = urlRepository.findById(Long.valueOf(request.getId()));
+    logger.info("Url: {}", optionalUrl);
+    
+    if (optionalUrl.isPresent()) {
+      Url url = optionalUrl.get();
+      url.setLongUrl(request.getLongUrl());
+      urlRepository.save(url);
+
+      return url;
+    }
+    throw new IllegalArgumentException("Url not found with id: " + request.getId());
   }
 
 }
