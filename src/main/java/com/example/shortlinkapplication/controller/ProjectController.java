@@ -22,63 +22,45 @@ import java.util.Optional;
 @AllArgsConstructor
 public class ProjectController {
 
-    private final ProjectServiceImpl projectService;
-    private final UserRepository userRepository;
-    private final ProjectRepository projectRepository;
+  private final ProjectServiceImpl projectService;
+  private final UserRepository userRepository;
+  private final ProjectRepository projectRepository;
 
-    @GetMapping("/get-project-list")
-    public List<Project> getListProject(@CurrentUser UserPrincipal userPrincipal){
-        User userID = getUser(userPrincipal);
-        return projectService.getListProject(userID);
+  @GetMapping("/get-project-list")
+  public List<Project> getListProject(@CurrentUser UserPrincipal userPrincipal) {
+    User userID = getUser(userPrincipal);
+    return projectService.getListProject(userID);
+  }
+
+  @PostMapping("/create-project")
+  public Project createProject(@RequestBody CreateProjectRequest request,
+      @CurrentUser UserPrincipal userPrincipal) {
+    User userID = getUser(userPrincipal);
+    return projectService.createProject(request, userID);
+  }
+
+  @PutMapping("/update-project-info")
+  public Project updateProject(@RequestBody UpdateProjectRequest request,
+      @CurrentUser UserPrincipal userPrincipal) {
+    User userID = getUser(userPrincipal);
+    return projectService.updateProject(request, userID);
+  }
+
+  @DeleteMapping("delete-project")
+  public List<Project> deleteProject(@RequestBody DeleteProjectRequest request,
+      @CurrentUser UserPrincipal userPrincipal) {
+    User userID = getUser(userPrincipal);
+    return projectService.deleteProject(request, userID);
+  }
+
+  private User getUser(UserPrincipal userPrincipal) {
+    Integer userID = userPrincipal.getId();
+    Optional<User> userOptional = userRepository.findById(userID);
+
+    if (userOptional.isPresent()) {
+      return userOptional.get();
     }
-
-    @PostMapping("/create-project")
-    public Project createProject(@RequestBody CreateProjectRequest request, @CurrentUser UserPrincipal userPrincipal) {
-        User userID = getUser(userPrincipal);
-        return projectService.createProject(request, userID);
-    }
-
-    @PutMapping("/update-project-info")
-    public Project updateProject(@RequestBody UpdateProjectRequest request, @CurrentUser UserPrincipal userPrincipal) {
-        User userID = getUser(userPrincipal);
-        return projectService.updateProject(request, userID);
-    }
-
-    @DeleteMapping("delete-project")
-    public List<Project> deleteProject(@RequestBody DeleteProjectRequest request, @CurrentUser UserPrincipal userPrincipal) {
-        User userID = getUser(userPrincipal);
-        return projectService.deleteProject(request, userID);
-    }
-
-    private User getUser (UserPrincipal userPrincipal) {
-        Integer userID = userPrincipal.getId();
-        Optional<User> userOptional = userRepository.findById(userID);
-
-        if (userOptional.isPresent()) {
-            return userOptional.get();
-        }
-        throw new RuntimeException("User not found with id: " + userID);
-    }
+    throw new RuntimeException("User not found with id: " + userID);
+  }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
