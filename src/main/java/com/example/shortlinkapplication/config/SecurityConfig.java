@@ -26,65 +26,69 @@ import java.util.Collections;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    @Autowired
-    private CustomOAuth2UserService oAuth2UserService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    @Lazy
-    private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
-    @Autowired
-    @Lazy
-    private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
-    @Autowired
-    private UserRepository userRepository;
+  @Autowired
+  private CustomOAuth2UserService oAuth2UserService;
+  @Autowired
+  private UserService userService;
+  @Autowired
+  @Lazy
+  private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+  @Autowired
+  @Lazy
+  private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
-    @Bean
-    public TokenAuthenticationFilter tokenAuthenticationFilter() {
-        return new TokenAuthenticationFilter();
-    }
+  @Autowired
+  private UserRepository userRepository;
 
-    @Bean
-    public HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository() {
-        return new HttpCookieOAuth2AuthorizationRequestRepository();
-    }
+  @Bean
+  public TokenAuthenticationFilter tokenAuthenticationFilter() {
+    return new TokenAuthenticationFilter();
+  }
 
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userService);
-        return provider;
-    }
+  @Bean
+  public HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository() {
+    return new HttpCookieOAuth2AuthorizationRequestRepository();
+  }
 
-    @Bean
-    public AuthenticationManager authenticationManager() throws Exception {
-        return new ProviderManager(Collections.singletonList(authenticationProvider()));
-    }
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        System.out.println("Start filer chain");
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/auth/**","/oauth2/**","/signin", "/dashboard/**").permitAll()
-                        .anyRequest().authenticated())
-                .oauth2Login(oauth -> oauth
-                        .authorizationEndpoint(auth -> auth.baseUri("/oauth2/authorize")
-                                .authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository())
-                        )
-                        .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
-                        .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
-                        .successHandler(oAuth2AuthenticationSuccessHandler)
-                        .failureHandler(oAuth2AuthenticationFailureHandler)
-                )
-                .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+  @Bean
+  public DaoAuthenticationProvider authenticationProvider() {
+    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+    provider.setUserDetailsService(userService);
+    return provider;
+  }
 
-        System.out.println("Finish");
-        return http.build();
-    }
+  @Bean
+  public AuthenticationManager authenticationManager() throws Exception {
+    return new ProviderManager(Collections.singletonList(authenticationProvider()));
+  }
+
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    System.out.println("Start filer chain");
+    http
+        .csrf(AbstractHttpConfigurer::disable)
+        .formLogin(AbstractHttpConfigurer::disable)
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(requests -> requests
+            .requestMatchers("/auth/**", "/oauth2/**", "/signin", "/dashboard/**", "/public/**")
+            .permitAll()
+            .anyRequest().authenticated())
+        .oauth2Login(oauth -> oauth
+            .authorizationEndpoint(auth -> auth.baseUri("/oauth2/authorize")
+                .authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository())
+            )
+            .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
+            .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+            .successHandler(oAuth2AuthenticationSuccessHandler)
+            .failureHandler(oAuth2AuthenticationFailureHandler)
+        )
+        .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+    System.out.println("Finish");
+    return http.build();
+  }
 
 
 }
