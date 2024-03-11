@@ -2,10 +2,10 @@ package com.example.shortlinkapplication.controller;
 
 import com.example.shortlinkapplication.dto.url.URLRequest;
 import com.example.shortlinkapplication.dto.url.UrlDeleteRequest;
+import com.example.shortlinkapplication.dto.url.UrlUpdateRequest;
 import com.example.shortlinkapplication.entity.Project;
 import com.example.shortlinkapplication.entity.Url;
 import com.example.shortlinkapplication.repository.ProjectRepository;
-import com.example.shortlinkapplication.dto.url.UrlUpdateRequest;
 import com.example.shortlinkapplication.service.project.ProjectServiceImpl;
 import com.example.shortlinkapplication.service.url.UrlServiceImpl;
 import java.util.List;
@@ -66,5 +66,10 @@ public class UrlController {
   @GetMapping("sort-by-total-click-url")
   public List<Url> sortByTotalClick(@RequestParam Integer projectID) {
     return urlService.sortByTotalClick(projectID);
+  }
+
+  @GetMapping
+  public List<Url> search(@RequestParam(value = "search") String keyword) {
+    return urlService.search(keyword);
   }
 }

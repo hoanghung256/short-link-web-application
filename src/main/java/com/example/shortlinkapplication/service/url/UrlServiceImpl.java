@@ -139,4 +139,12 @@ public class UrlServiceImpl implements UrlService {
     return urlRepository.findByProjectIDOrderByTotalClickUrlDesc(project);
   }
 
+  @Override
+  public List<Url> search(String keyword) {
+    if (keyword != null) {
+      return urlRepository.search(keyword);
+    }
+    return urlRepository.findAll();
+  }
+
 }

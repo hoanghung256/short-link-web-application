@@ -22,4 +22,6 @@ public interface UrlService {
 
   List<Url> sortByTotalClick(Integer projectID);
 
+  List<Url> search(String keyword);
+
 }
