@@ -1,11 +1,12 @@
 package com.example.shortlinkapplication.service.url;
 
 import com.example.shortlinkapplication.dto.url.URLRequest;
+import com.example.shortlinkapplication.dto.url.UrlDeleteRequest;
 import com.example.shortlinkapplication.entity.Project;
 import com.example.shortlinkapplication.entity.Url;
 import com.example.shortlinkapplication.repository.ProjectRepository;
 import com.example.shortlinkapplication.repository.URLRepository;
-import com.example.shortlinkapplication.repository.UrlUpdateRequest;
+import com.example.shortlinkapplication.dto.url.UrlUpdateRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class UrlServiceImpl implements UrlService {
    * @return shortUrl
    */
   @Override
-  public String convertToShortUrl(URLRequest request) {
+  public Url convertToShortUrl(URLRequest request) {
     var url = new Url();
     url.setLongUrl(request.getLongUrl());
     url.setCreationDate(LocalDate.now());
@@ -75,11 +76,8 @@ public class UrlServiceImpl implements UrlService {
     url.setShortUrl(shortUrl);
     urlRepository.save(url);
 
-    //String domain = url.getProjectID().getDomain();
-    //String fullDomain = "https://" + domain + "/" + shortUrl;
-
     logger.info("Full domain: {}", shortUrl);
-    return shortUrl;
+    return url;
   }
 
   @Override
@@ -99,7 +97,7 @@ public class UrlServiceImpl implements UrlService {
   public Url updateLongUrl(UrlUpdateRequest request) {
     Optional<Url> optionalUrl = urlRepository.findById(Long.valueOf(request.getId()));
     logger.info("Url: {}", optionalUrl);
-    
+
     if (optionalUrl.isPresent()) {
       Url url = optionalUrl.get();
       url.setLongUrl(request.getLongUrl());
@@ -108,6 +106,14 @@ public class UrlServiceImpl implements UrlService {
       return url;
     }
     throw new IllegalArgumentException("Url not found with id: " + request.getId());
+  }
+
+  @Override
+  public List<Url> deleteUrl(UrlDeleteRequest request) {
+    urlRepository.deleteByShortUrl(request.getShortUrl());
+    List<Url> urlList = getListUrl(request.getProjectID());
+    logger.info("Url list: {}", urlList);
+    return urlList;
   }
 
 }

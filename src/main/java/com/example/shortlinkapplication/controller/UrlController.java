@@ -1,16 +1,18 @@
 package com.example.shortlinkapplication.controller;
 
 import com.example.shortlinkapplication.dto.url.URLRequest;
+import com.example.shortlinkapplication.dto.url.UrlDeleteRequest;
 import com.example.shortlinkapplication.entity.Project;
 import com.example.shortlinkapplication.entity.Url;
 import com.example.shortlinkapplication.repository.ProjectRepository;
-import com.example.shortlinkapplication.repository.UrlUpdateRequest;
+import com.example.shortlinkapplication.dto.url.UrlUpdateRequest;
 import com.example.shortlinkapplication.service.project.ProjectServiceImpl;
 import com.example.shortlinkapplication.service.url.UrlServiceImpl;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,13 +44,18 @@ public class UrlController {
   }
 
   @PostMapping("create-short")
-  public String convertToShortUrl(@RequestBody URLRequest request) {
+  public Url convertToShortUrl(@RequestBody URLRequest request) {
     return urlService.convertToShortUrl(request);
   }
 
   @PutMapping("update-long-url")
   public Url updateLongUrl(@RequestBody UrlUpdateRequest request) {
     return urlService.updateLongUrl(request);
+  }
+
+  @DeleteMapping("delete-url")
+  public List<Url> deleteUrl(@RequestBody UrlDeleteRequest request) {
+    return urlService.deleteUrl(request);
   }
 
 

@@ -1,4 +1,4 @@
-package com.example.shortlinkapplication.repository;
+package com.example.shortlinkapplication.dto.url;
 
 import lombok.Data;
 
