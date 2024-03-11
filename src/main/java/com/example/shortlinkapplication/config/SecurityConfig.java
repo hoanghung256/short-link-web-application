@@ -8,7 +8,7 @@ import com.example.shortlinkapplication.security.oauth.OAuth2AuthenticationFailu
 import com.example.shortlinkapplication.security.oauth.OAuth2AuthenticationSuccessHandler;
 import com.example.shortlinkapplication.service.UserService;
 import java.util.Collections;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -24,16 +24,22 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@AllArgsConstructor
 public class SecurityConfig {
 
-  private final CustomOAuth2UserService oAuth2UserService;
-  private final UserService userService;
+  @Autowired
+  private CustomOAuth2UserService oAuth2UserService;
+  @Autowired
+  private UserService userService;
+  @Autowired
   @Lazy
-  private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+  private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+  @Autowired
   @Lazy
-  private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
-  private final UserRepository userRepository;
+  private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+
+  @Autowired
+  private UserRepository userRepository;
+
 
   @Bean
   public TokenAuthenticationFilter tokenAuthenticationFilter() {
