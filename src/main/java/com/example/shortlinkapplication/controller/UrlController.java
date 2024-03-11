@@ -62,4 +62,9 @@ public class UrlController {
   public List<Url> sortByCreateDate(@RequestParam Integer projectID) {
     return urlService.sortByCreationDate(projectID);
   }
+
+  @GetMapping("sort-by-total-click-url")
+  public List<Url> sortByTotalClick(@RequestParam Integer projectID) {
+    return urlService.sortByTotalClick(projectID);
+  }
 }

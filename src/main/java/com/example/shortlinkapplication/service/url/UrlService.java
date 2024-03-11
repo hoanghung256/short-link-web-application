@@ -19,5 +19,7 @@ public interface UrlService {
   List<Url> deleteUrl(UrlDeleteRequest shortUrl);
 
   List<Url> sortByCreationDate(Integer projectID);
-  
+
+  List<Url> sortByTotalClick(Integer projectID);
+
 }

@@ -25,4 +25,6 @@ public interface URLRepository extends JpaRepository<Url, Long> {
   void deleteByShortUrl(String shortUrl);
 
   List<Url> findByProjectIDOrderByCreationDateDesc(Project projectID);
+
+  List<Url> findByProjectIDOrderByTotalClickUrlDesc(Project projectID);
 }

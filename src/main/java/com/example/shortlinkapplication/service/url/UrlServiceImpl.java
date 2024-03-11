@@ -133,4 +133,10 @@ public class UrlServiceImpl implements UrlService {
     return urlRepository.findByProjectIDOrderByCreationDateDesc(project);
   }
 
+  @Override
+  public List<Url> sortByTotalClick(Integer projectID) {
+    Project project = projectRepository.findByProjectID(projectID);
+    return urlRepository.findByProjectIDOrderByTotalClickUrlDesc(project);
+  }
+
 }
