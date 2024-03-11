@@ -23,4 +23,6 @@ public interface URLRepository extends JpaRepository<Url, Long> {
   @Modifying
   @Query("DELETE FROM Url u WHERE u.shortUrl = ?1")
   void deleteByShortUrl(String shortUrl);
+
+  List<Url> findByProjectIDOrderByCreationDateDesc(Project projectID);
 }

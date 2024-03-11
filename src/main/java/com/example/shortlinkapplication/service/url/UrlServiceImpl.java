@@ -126,4 +126,11 @@ public class UrlServiceImpl implements UrlService {
     return urlList;
   }
 
+  @Override
+  public List<Url> sortByCreationDate(Integer projectID) {
+    Project project = projectRepository.findByProjectID(projectID);
+    logger.info("ProjectID: {}", projectID);
+    return urlRepository.findByProjectIDOrderByCreationDateDesc(project);
+  }
+
 }

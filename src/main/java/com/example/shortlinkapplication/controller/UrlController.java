@@ -58,5 +58,8 @@ public class UrlController {
     return urlService.deleteUrl(request);
   }
 
-
+  @GetMapping("sort-by-create-date")
+  public List<Url> sortByCreateDate(@RequestParam Integer projectID) {
+    return urlService.sortByCreationDate(projectID);
+  }
 }

@@ -17,4 +17,7 @@ public interface UrlService {
   Url updateLongUrl(UrlUpdateRequest request);
 
   List<Url> deleteUrl(UrlDeleteRequest shortUrl);
+
+  List<Url> sortByCreationDate(Integer projectID);
+  
 }
