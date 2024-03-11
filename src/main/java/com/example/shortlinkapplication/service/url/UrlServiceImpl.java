@@ -45,7 +45,6 @@ public class UrlServiceImpl implements UrlService {
   /**
    * generate long url to short url
    *
-   * @param request
    * @return shortUrl
    */
   @Override
@@ -88,6 +87,17 @@ public class UrlServiceImpl implements UrlService {
     if (optionalUrl.isPresent()) {
       Url url = optionalUrl.get();
       logger.info("Get long url: {}", url.getLongUrl());
+
+      // count click url
+      Integer totalClick = url.getTotalClickUrl();
+      if (totalClick != null) {
+        url.setTotalClickUrl(totalClick + 1);
+      } else {
+        url.setTotalClickUrl(1);
+      }
+      urlRepository.save(url);
+      logger.info("Total click: {}", url.getTotalClickUrl());
+
       return url.getLongUrl();
     }
     return null;
