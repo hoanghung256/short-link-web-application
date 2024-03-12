@@ -1,5 +1,6 @@
 package com.example.shortlinkapplication.service;
 
+import com.example.shortlinkapplication.dto.profile.DeleteProfileRequest;
 import com.example.shortlinkapplication.dto.profile.UpdateProfileRequest;
 import com.example.shortlinkapplication.entity.User;
 import com.example.shortlinkapplication.repository.UserRepository;
@@ -50,6 +51,16 @@ public class UserService implements UserDetailsService {
       userRepository.save(user);
       logger.info("User: {}", user);
       return user;
+    }
+    return null;
+  }
+
+  public String deleteUserProfile(DeleteProfileRequest request, Integer userID) {
+    Optional<User> optionalUser = userRepository.findById(userID);
+    String verify = "confirm delete account";
+    if (optionalUser.isPresent() && request.getVerify().equals(verify)) {
+      userRepository.deleteById(userID);
+      return "Delete account success!";
     }
     return null;
   }

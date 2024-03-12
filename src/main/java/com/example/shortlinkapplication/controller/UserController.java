@@ -1,5 +1,6 @@
 package com.example.shortlinkapplication.controller;
 
+import com.example.shortlinkapplication.dto.profile.DeleteProfileRequest;
 import com.example.shortlinkapplication.dto.profile.UpdateProfileRequest;
 import com.example.shortlinkapplication.entity.User;
 import com.example.shortlinkapplication.repository.UserRepository;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,6 +42,14 @@ public class UserController {
     Integer userID = user.getUserID();
     logger.info("UserId: {}", userID);
     return userService.updateUserProfile(request, userID);
+  }
+
+  @DeleteMapping("delete-profile")
+  public String deleteUserProfile(@CurrentUser UserPrincipal userPrincipal,
+      @RequestBody DeleteProfileRequest request) {
+    User user = projectController.getUser(userPrincipal);
+    Integer userID = user.getUserID();
+    return userService.deleteUserProfile(request, userID);
   }
 
 }
