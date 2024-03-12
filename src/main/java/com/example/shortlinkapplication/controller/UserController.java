@@ -1,30 +1,45 @@
 package com.example.shortlinkapplication.controller;
 
+import com.example.shortlinkapplication.dto.profile.UpdateProfileRequest;
 import com.example.shortlinkapplication.entity.User;
 import com.example.shortlinkapplication.repository.UserRepository;
 import com.example.shortlinkapplication.security.CurrentUser;
 import com.example.shortlinkapplication.security.UserPrincipal;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
+import com.example.shortlinkapplication.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("/profile")
 public class UserController {
 
-    @Autowired
-    private UserRepository userRepository;
+  private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+  private final UserRepository userRepository;
+  private final ProjectController projectController;
+  private final UserService userService;
 
-    @CrossOrigin
-    @GetMapping("user/me")
-    public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
-        System.out.println("getting current user");
-        return userRepository.findById(userPrincipal.getId()).orElseThrow(() -> new RuntimeException(String.valueOf(userPrincipal.getId())));
-    }
+  @CrossOrigin
+  @GetMapping("user/me")
+  public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
+    return userRepository.findById(userPrincipal.getId())
+        .orElseThrow(() -> new RuntimeException(String.valueOf(userPrincipal.getId())));
+  }
+
+  @PutMapping("update-profile")
+  public User updateUserProfile(@CurrentUser UserPrincipal userPrincipal,
+      @RequestBody UpdateProfileRequest request) {
+    User user = projectController.getUser(userPrincipal);
+    Integer userID = user.getUserID();
+    logger.info("UserId: {}", userID);
+    return userService.updateUserProfile(request, userID);
+  }
 
 }

@@ -72,7 +72,7 @@ public class SecurityConfig {
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(requests -> requests
             .requestMatchers("/auth/**", "/oauth2/**", "/signin", "/dashboard/**", "/public/**",
-                "/**")
+                "/**", "/profile/**")
             .permitAll()
             .anyRequest().authenticated())
         .oauth2Login(oauth -> oauth
