@@ -63,7 +63,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   /**
-   * update exist project information
+   * update exist project information with userID
    *
    * @param request, userID
    * @return list project
@@ -71,17 +71,26 @@ public class ProjectServiceImpl implements ProjectService {
   @Override
   public Project updateProject(UpdateProjectRequest request, User userID) {
     Optional<Project> optionalProject = projectRepository.findById(request.getProjectID());
-    logger.info("Optional project: {}", optionalProject);
+    logger.info("Find project by userID: {}", projectRepository.findProjectByUserID(userID));
 
     if (optionalProject.isPresent()) {
       Project project = optionalProject.get();
+      User findUserID = projectRepository.findUserIDByProjectID(project.getProjectID());
+      if (!userID.equals(findUserID)) {
+        logger.info("UserID: {}", userID);
+        logger.info("Find user id: {}", findUserID);
+        logger.error("Handler policy user update");
+        throw new IllegalArgumentException("Handler policy user update");
+      } else {
+        project.setProjectName(request.getName());
+        project.setProjectSlug(request.getSlug());
+        projectRepository.save(project);
 
-      project.setProjectName(request.getName());
-      project.setProjectSlug(request.getSlug());
-      projectRepository.save(project);
+        return project;
+      }
 
-      return project;
     }
+    logger.error("No exist project of the user ID: {}", userID);
     throw new IllegalArgumentException("Project not found with id: " + request.getProjectID());
   }
 
@@ -99,9 +108,18 @@ public class ProjectServiceImpl implements ProjectService {
 
     // get slug => projectID
     Optional<Project> optionalProject = projectRepository.findById(request.getProjectID());
-    if (optionalProject.isPresent()) {
+    if (optionalProject.isEmpty()) {
+      logger.error("Not found project with projectID: {}", projectID);
+      throw new IllegalStateException("Not found project with projectID!");
+    } else {
       Project project = optionalProject.get();
-      if (project.getProjectSlug().equals(slug) && verify.equals("confirm delete project")) {
+      User findUserID = projectRepository.findUserIDByProjectID(project.getProjectID());
+
+      if (!userID.equals(findUserID)) {
+        logger.error("The request does not match userID!");
+        throw new IllegalStateException("The request does not match userID!");
+
+      } else if (project.getProjectSlug().equals(slug) && verify.equals("confirm delete project")) {
         projectRepository.deleteById(projectID);
         logger.info("Get project list: {}", getListProject(userID));
         return getListProject(userID);
@@ -109,8 +127,6 @@ public class ProjectServiceImpl implements ProjectService {
         throw new IllegalArgumentException(
             "The request does not match the slug or verify string of project!");
       }
-    } else {
-      throw new IllegalArgumentException("The request does not match the slug of project!");
     }
   }
 
