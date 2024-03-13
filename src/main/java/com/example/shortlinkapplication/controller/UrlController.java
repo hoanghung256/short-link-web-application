@@ -68,7 +68,7 @@ public class UrlController {
     return urlService.sortByTotalClick(projectID);
   }
 
-  @GetMapping
+  @GetMapping("search")
   public List<Url> search(@RequestParam(value = "search") String keyword) {
     return urlService.search(keyword);
   }
