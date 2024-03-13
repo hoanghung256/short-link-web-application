@@ -1,6 +1,15 @@
 server:
   port: 8080
 
+logging:
+  file:
+    path: /
+    name: short-link.log
+  level:
+    com:
+      example:
+        shortlinkapplication: debug
+
 springdoc:
   api-docs:
     path: /api-docs
