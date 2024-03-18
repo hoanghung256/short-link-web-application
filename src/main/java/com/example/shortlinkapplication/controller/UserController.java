@@ -15,12 +15,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/profile")
+//@RequestMapping("/profile")
 public class UserController {
 
   private static final Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -31,6 +30,7 @@ public class UserController {
   @CrossOrigin
   @GetMapping("user/me")
   public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
+    logger.info("User principal: {}", userPrincipal);
     return userRepository.findById(userPrincipal.getId())
         .orElseThrow(() -> new RuntimeException(String.valueOf(userPrincipal.getId())));
   }
