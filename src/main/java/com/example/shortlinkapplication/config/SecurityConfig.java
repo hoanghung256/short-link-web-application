@@ -65,14 +65,14 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    System.out.println("Start filer chain");
     http
         .csrf(AbstractHttpConfigurer::disable)
         .formLogin(AbstractHttpConfigurer::disable)
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(requests -> requests
-            .requestMatchers("/auth/**", "/oauth2/**", "/signin", "/dashboard/**", "/public/**")
+            .requestMatchers("/auth/**", "/oauth2/**", "/signin", "/dashboard/**", "/public/**",
+                "/**")
             .permitAll()
             .anyRequest().authenticated())
         .oauth2Login(oauth -> oauth
@@ -86,7 +86,6 @@ public class SecurityConfig {
         )
         .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
-    System.out.println("Finish");
     return http.build();
   }
 

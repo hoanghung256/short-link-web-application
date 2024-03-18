@@ -1,6 +1,13 @@
 server:
   port: 8080
 
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /link-swagger-ui.html
+    operationsSorter: method
+    
 spring:
   datasource:
     url: jdbc:sqlserver://localhost:1433;databaseName=linkapplication;encrypt=true;trustServerCertificate=true
