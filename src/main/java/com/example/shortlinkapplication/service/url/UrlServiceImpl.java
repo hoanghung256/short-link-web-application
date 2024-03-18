@@ -10,11 +10,14 @@ import com.example.shortlinkapplication.repository.URLRepository;
 import com.example.shortlinkapplication.dto.url.UrlUpdateRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,7 +39,7 @@ public class UrlServiceImpl implements UrlService {
     User findUserID = projectRepository.findUserIDByProjectID(projectID);
     if (!userID.equals(findUserID)) {
       logger.error("Handler policy user request");
-      return null;
+      return Collections.emptyList();
     } else {
       Project project = projectRepository.findByProjectID(projectID);
       List<Url> urlList = urlRepository.findUrlByProjectID(project);
@@ -52,7 +55,6 @@ public class UrlServiceImpl implements UrlService {
   /**
    * generate long url to short url
    *
-   * @param request
    * @return shortUrl
    */
   @Override
@@ -127,6 +129,12 @@ public class UrlServiceImpl implements UrlService {
     List<Url> urlList = getListUrl(request.getProjectID(), userID);
     logger.info("Url list: {}", urlList);
     return urlList;
+  }
+
+  @Override
+  public Page<Url> findAllUrlByProjectID(Integer projectID, Pageable pageable) {
+    Project project = projectRepository.findByProjectID(projectID);
+    return urlRepository.findAllByProjectID(project, pageable);
   }
 
 }

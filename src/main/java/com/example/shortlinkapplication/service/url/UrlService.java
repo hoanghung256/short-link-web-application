@@ -6,6 +6,8 @@ import com.example.shortlinkapplication.entity.Url;
 import com.example.shortlinkapplication.dto.url.UrlUpdateRequest;
 import com.example.shortlinkapplication.entity.User;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface UrlService {
 
@@ -18,4 +20,6 @@ public interface UrlService {
   Url updateLongUrl(UrlUpdateRequest request);
 
   List<Url> deleteUrl(UrlDeleteRequest shortUrl, User userID);
+
+  Page<Url> findAllUrlByProjectID(Integer projectID, Pageable pageable);
 }
