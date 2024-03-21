@@ -7,18 +7,16 @@ import com.example.shortlinkapplication.dto.SignUpRequest;
 import com.example.shortlinkapplication.entity.AuthProvider;
 import com.example.shortlinkapplication.entity.User;
 import com.example.shortlinkapplication.repository.UserRepository;
-import com.example.shortlinkapplication.security.JwtAuthenticationFilter;
 import com.example.shortlinkapplication.security.TokenProvider;
 import com.example.shortlinkapplication.security.oauth.OAuth2AuthenticationFailureHandler;
 import com.example.shortlinkapplication.security.oauth.OAuth2AuthenticationSuccessHandler;
 import com.example.shortlinkapplication.service.LoginService;
 import com.example.shortlinkapplication.service.UserService;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,6 +35,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class LoginController {
 
   private final LoginService loginService;
@@ -46,7 +45,6 @@ public class LoginController {
   private final UserService userService;
   private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
   private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
-  private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @PostMapping("/login")
   public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
@@ -62,8 +60,7 @@ public class LoginController {
   // if token is confirmed will create new jwt after
   @GetMapping("/confirm")
   public ResponseEntity<LoginResponse> confirm(@RequestParam("token") String token,
-      HttpServletRequest request, HttpServletResponse response)
-      throws IOException, ServletException {
+      HttpServletRequest request, HttpServletResponse response) {
     Integer userID = loginService.confirmToken(token, request, response);
 
     // create new user authenticated
@@ -74,15 +71,15 @@ public class LoginController {
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
 
-    // call jwt authentication filter
-    jwtAuthenticationFilter.successfulAuthentication(request, response, null, authentication);
+    String jwt = tokenProvider.createToken(authentication);
+    log.info("JWT: {}", jwt);
 
-    // get jwt token
-    User jwt = userRepository.findTokenByUserID(userID);
-    LoginResponse loginResponse = new LoginResponse(jwt.getToken());
+    LoginResponse loginResponse = new LoginResponse(jwt);
+
+    // Add token to the Authorization header
+    response.addHeader("Authorization", "Bearer " + jwt);
 
     return ResponseEntity.ok(loginResponse);
-
   }
 
   @GetMapping("/error")
