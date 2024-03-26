@@ -17,26 +17,31 @@ CREATE TABLE [user_account] (
   email VARCHAR(32),
   password VARCHAR(50),
   auth_provider VARCHAR(50),
-  email_verified BIT,
-  provider_id VARCHAR(50)
+  provider_id VARCHAR(50),
+  token VARCHAR(255)
 );
 
 CREATE TABLE url (
-  shortLink VARCHAR(16) PRIMARY KEY,
-  originalURL VARCHAR(MAX),
-  creationDate DATETIME,
-  expirationDate DATETIME,
-  userID INT,
-  FOREIGN KEY (userID) REFERENCES [user_account](userID)
+  id INT PRIMARY KEY,
+  short_url VARCHAR(50) ,
+  long_url VARCHAR(MAX),
+  create_date DATETIME,
+  expire_date DATETIME,
+  projectID INT,
+  total_click_url INT,
+  FOREIGN KEY (projectID) REFERENCES [project](projectID)
 );
 
 CREATE TABLE project (
   projectID INT IDENTITY(1,1) PRIMARY KEY,
-  projectName VARCHAR(20),
-  projectSlug VARCHAR(20),
-  creationDate DATETIME,
-  shortLink VARCHAR(16),
-  FOREIGN KEY (shortLink) REFERENCES url(shortLink)
+  project_name VARCHAR(20),
+  project_slug VARCHAR(20),
+  create_date DATETIME,
+  total_link INT,
+  total_click INT,
+  userID INT,
+  [domain] VARCHAR(10),
+  FOREIGN KEY (userID) REFERENCES user_account(userID)
 );
 
 CREATE TABLE locations (
@@ -87,7 +92,9 @@ CREATE TABLE [dbo].[confirm_token]
     [token] VARCHAR(MAX) NOT NULL,
     [created_at] DATETIME NOT NULL,
     [expired_at] DATETIME NOT NULL,
-    [confirmed_at] DATETIME NOT NULL
+    [confirmed_at] DATETIME NOT NULL,
+    userID INT,
+    FOREIGN KEY (userID) REFERENCES [user_account](userID)
 );
 
 
