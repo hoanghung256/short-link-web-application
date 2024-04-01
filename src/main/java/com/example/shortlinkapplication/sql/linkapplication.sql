@@ -11,12 +11,14 @@ IF NOT EXISTS (
 CREATE DATABASE linkapplication
 GO
 
-CREATE TABLE [user] (
+CREATE TABLE [user_account] (
   userID INT IDENTITY(1,1) PRIMARY KEY,
   name NVARCHAR(20),
   email VARCHAR(32),
-  creationDate DATETIME,
-  lastLogin DATETIME
+  password VARCHAR(50),
+  auth_provider VARCHAR(50),
+  email_verified BIT,
+  provider_id VARCHAR(50)
 );
 
 CREATE TABLE url (
@@ -25,7 +27,7 @@ CREATE TABLE url (
   creationDate DATETIME,
   expirationDate DATETIME,
   userID INT,
-  FOREIGN KEY (userID) REFERENCES [user](userID)
+  FOREIGN KEY (userID) REFERENCES [user_account](userID)
 );
 
 CREATE TABLE project (
@@ -77,7 +79,17 @@ CREATE TABLE subscriptions (
   startDate DATETIME,
   endDate DATETIME,
   remainingTime INT
-  FOREIGN KEY (userID) REFERENCES [user](userID)
+  FOREIGN KEY (userID) REFERENCES [user_account](userID)
+);
+CREATE TABLE [dbo].[confirm_token]
+(
+    [Id] INT IDENTITY(1,1) PRIMARY KEY, -- Primary Key column
+    [token] VARCHAR(MAX) NOT NULL,
+    [created_at] DATETIME NOT NULL,
+    [expired_at] DATETIME NOT NULL,
+    [confirmed_at] DATETIME NOT NULL,
+    userID INT
+    FOREIGN KEY (userID) REFERENCES [user](userID)
 );
 
 
