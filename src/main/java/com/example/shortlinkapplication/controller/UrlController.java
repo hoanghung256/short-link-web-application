@@ -15,6 +15,8 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -66,6 +68,11 @@ public class UrlController {
       @CurrentUser UserPrincipal userPrincipal) {
     User userID = projectController.getUser(userPrincipal);
     return urlService.deleteUrl(request, userID);
+  }
+
+  @GetMapping("urls")
+  public Page<Url> getUrlByProjectID(@RequestParam Integer projectID, Pageable pageable) {
+    return urlService.findAllUrlByProjectID(projectID, pageable);
   }
 
   @GetMapping("sort-by-create-date")

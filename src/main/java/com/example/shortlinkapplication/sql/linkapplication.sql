@@ -23,11 +23,11 @@ CREATE TABLE [user_account] (
 );
 
 CREATE TABLE url (
-  id INT IDENTITY(1,1) PRIMARY KEY,
-  shortLink VARCHAR(50),
-  longUrl VARCHAR(MAX),
-  creationDate DATETIME,
-  expirationDate DATETIME,
+  id INT PRIMARY KEY,
+  short_url VARCHAR(50) ,
+  long_url VARCHAR(MAX),
+  create_date DATETIME,
+  expire_date DATETIME,
   projectID INT,
   total_click_url INT,
   FOREIGN KEY (projectID) REFERENCES [project](projectID)
@@ -38,6 +38,7 @@ CREATE TABLE project (
   project_name VARCHAR(20),
   project_slug VARCHAR(20),
   create_date DATETIME,
+  total_link INT,
   total_click INT,
   userID INT,
   [domain] VARCHAR(10),

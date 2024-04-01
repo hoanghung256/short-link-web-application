@@ -6,6 +6,9 @@ import com.example.shortlinkapplication.entity.User;
 import com.example.shortlinkapplication.repository.UserRepository;
 import com.example.shortlinkapplication.security.CurrentUser;
 import com.example.shortlinkapplication.security.UserPrincipal;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import com.example.shortlinkapplication.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -22,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 //@RequestMapping("/profile")
 public class UserController {
 
+  @Autowired
+  private UserRepository userRepository;
   private static final Logger logger = LoggerFactory.getLogger(UserController.class);
   private final UserRepository userRepository;
   private final ProjectController projectController;
