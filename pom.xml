@@ -42,14 +42,6 @@
       <version>3.2.3</version>
     </dependency>
 
-    <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-amqp -->
-    <dependency>
-      <artifactId>spring-boot-starter-amqp</artifactId>
-      <groupId>org.springframework.boot</groupId>
-      <version>3.2.3</version>
-    </dependency>
-
-
     <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-jose -->
     <dependency>
       <artifactId>spring-security-oauth2-jose</artifactId>
@@ -81,6 +73,24 @@
       <artifactId>kryo</artifactId>
       <groupId>com.esotericsoftware</groupId>
       <version>4.0.3</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>guava</artifactId>
+      <groupId>com.google.guava</groupId>
+      <version>32.1.3-jre</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>commons-codec</artifactId>
+      <groupId>commons-codec</groupId>
+      <version>1.15</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <groupId>org.springdoc</groupId>
+      <version>2.2.0</version>
     </dependency>
 
     <dependency>

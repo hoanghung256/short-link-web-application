@@ -64,7 +64,7 @@ public class ProjectController {
     if (userOptional.isPresent()) {
       return userOptional.get();
     }
-    throw new IllegalStateException("User not found with id: " + userID);
+    throw new IllegalArgumentException("User not found with id: " + userID);
   }
 
 }

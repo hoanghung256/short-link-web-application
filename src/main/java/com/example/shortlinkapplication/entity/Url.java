@@ -34,6 +34,9 @@ public class Url {
   @Column(name = "expire_date")
   private LocalDate expirationDate;
 
+  @Column(name = "total_click_url")
+  private Integer totalClickUrl;
+
   @ManyToOne(fetch = FetchType.EAGER) // fetch type LAZY is default
   @JoinColumn(name = "projectID")
   private Project projectID;

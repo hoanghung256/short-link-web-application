@@ -23,4 +23,12 @@ public interface URLRepository extends JpaRepository<Url, Long> {
   @Modifying
   @Query("DELETE FROM Url u WHERE u.shortUrl = ?1")
   void deleteByShortUrl(String shortUrl);
+
+  List<Url> findByProjectIDOrderByCreationDateDesc(Project projectID);
+
+  List<Url> findByProjectIDOrderByTotalClickUrlDesc(Project projectID);
+
+  @Transactional
+  @Query("SELECT u FROM Url u WHERE CONCAT(u.shortUrl, ' ', u.longUrl, ' ') LIKE %?1%")
+  List<Url> search(String keyword);
 }

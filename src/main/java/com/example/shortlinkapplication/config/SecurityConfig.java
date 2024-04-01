@@ -39,6 +39,7 @@ public class SecurityConfig {
   @Autowired
   private UserRepository userRepository;
 
+
   @Bean
   public TokenAuthenticationFilter tokenAuthenticationFilter() {
     return new TokenAuthenticationFilter();
@@ -57,7 +58,7 @@ public class SecurityConfig {
   }
 
   @Bean
-  public AuthenticationManager authenticationManager() throws Exception {
+  public AuthenticationManager authenticationManager() {
     return new ProviderManager(Collections.singletonList(authenticationProvider()));
   }
 
@@ -69,7 +70,8 @@ public class SecurityConfig {
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(requests -> requests
-            .requestMatchers("/auth/**", "/oauth2/**", "/signin", "/dashboard/**", "/public/**")
+            .requestMatchers("/auth/**", "/oauth2/**", "/signin", "/dashboard/**", "/public/**",
+                "/**", "/profile/**")
             .permitAll()
             .anyRequest().authenticated())
         .oauth2Login(oauth -> oauth
