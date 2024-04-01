@@ -135,6 +135,13 @@ public class UrlServiceImpl implements UrlService {
   }
 
   @Override
+  public List<Url> sortByCreationDate(Integer projectID) {
+    Project project = projectRepository.findByProjectID(projectID);
+    logger.info("ProjectID: {}", projectID);
+    return urlRepository.findByProjectIDOrderByCreationDateDesc(project);
+  }
+
+  @Override
   public List<Url> deleteUrl(UrlDeleteRequest request, User userID) {
     urlRepository.deleteByShortUrl(request.getShortUrl());
     List<Url> urlList = getListUrl(request.getProjectID(), userID);
@@ -146,6 +153,7 @@ public class UrlServiceImpl implements UrlService {
   public Page<Url> findAllUrlByProjectID(Integer projectID, Pageable pageable) {
     Project project = projectRepository.findByProjectID(projectID);
     return urlRepository.findAllByProjectID(project, pageable);
+  }
 
   @Override
   public List<Url> sortByTotalClick(Integer projectID) {
