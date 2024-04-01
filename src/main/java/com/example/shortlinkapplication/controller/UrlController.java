@@ -7,6 +7,7 @@ import com.example.shortlinkapplication.entity.Project;
 import com.example.shortlinkapplication.entity.Url;
 import com.example.shortlinkapplication.entity.User;
 import com.example.shortlinkapplication.repository.ProjectRepository;
+import com.example.shortlinkapplication.service.project.ProjectServiceImpl;
 import com.example.shortlinkapplication.security.CurrentUser;
 import com.example.shortlinkapplication.security.UserPrincipal;
 import com.example.shortlinkapplication.service.url.UrlServiceImpl;
@@ -74,5 +75,18 @@ public class UrlController {
     return urlService.findAllUrlByProjectID(projectID, pageable);
   }
 
+  @GetMapping("sort-by-create-date")
+  public List<Url> sortByCreateDate(@RequestParam Integer projectID) {
+    return urlService.sortByCreationDate(projectID);
+  }
 
+  @GetMapping("sort-by-total-click-url")
+  public List<Url> sortByTotalClick(@RequestParam Integer projectID) {
+    return urlService.sortByTotalClick(projectID);
+  }
+
+  @GetMapping("search")
+  public List<Url> search(@RequestParam(value = "search") String keyword) {
+    return urlService.search(keyword);
+  }
 }

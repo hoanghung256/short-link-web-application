@@ -17,6 +17,7 @@ CREATE TABLE [user_account] (
   email VARCHAR(32),
   password VARCHAR(50),
   auth_provider VARCHAR(50),
+  email_verified BIT,
   provider_id VARCHAR(50),
   token VARCHAR(255)
 );
@@ -96,5 +97,3 @@ CREATE TABLE [dbo].[confirm_token]
     userID INT,
     FOREIGN KEY (userID) REFERENCES [user_account](userID)
 );
-
-

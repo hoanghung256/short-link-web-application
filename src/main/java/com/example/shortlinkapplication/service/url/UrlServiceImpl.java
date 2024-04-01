@@ -103,6 +103,17 @@ public class UrlServiceImpl implements UrlService {
     if (optionalUrl.isPresent()) {
       Url url = optionalUrl.get();
       logger.info("Get long url: {}", url.getLongUrl());
+
+      // count click url
+      Integer totalClick = url.getTotalClickUrl();
+      if (totalClick != null) {
+        url.setTotalClickUrl(totalClick + 1);
+      } else {
+        url.setTotalClickUrl(1);
+      }
+      urlRepository.save(url);
+      logger.info("Total click: {}", url.getTotalClickUrl());
+
       return url.getLongUrl();
     }
     return null;
@@ -135,6 +146,19 @@ public class UrlServiceImpl implements UrlService {
   public Page<Url> findAllUrlByProjectID(Integer projectID, Pageable pageable) {
     Project project = projectRepository.findByProjectID(projectID);
     return urlRepository.findAllByProjectID(project, pageable);
+
+  @Override
+  public List<Url> sortByTotalClick(Integer projectID) {
+    Project project = projectRepository.findByProjectID(projectID);
+    return urlRepository.findByProjectIDOrderByTotalClickUrlDesc(project);
+  }
+
+  @Override
+  public List<Url> search(String keyword) {
+    if (keyword != null) {
+      return urlRepository.search(keyword);
+    }
+    return urlRepository.findAll();
   }
 
 }

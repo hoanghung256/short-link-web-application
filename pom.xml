@@ -114,7 +114,6 @@
       <groupId>org.springframework.boot</groupId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
   <description>Demo project for Spring Boot</description>
   <groupId>com.example</groupId>
@@ -131,5 +130,4 @@
   </properties>
 
   <version>0.0.1-SNAPSHOT</version>
-
 </project>

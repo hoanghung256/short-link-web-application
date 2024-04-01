@@ -19,6 +19,12 @@ public interface UrlService {
 
   Url updateLongUrl(UrlUpdateRequest request);
 
+  List<Url> sortByCreationDate(Integer projectID);
+
+  List<Url> sortByTotalClick(Integer projectID);
+
+  List<Url> search(String keyword);
+
   List<Url> deleteUrl(UrlDeleteRequest shortUrl, User userID);
 
   Page<Url> findAllUrlByProjectID(Integer projectID, Pageable pageable);

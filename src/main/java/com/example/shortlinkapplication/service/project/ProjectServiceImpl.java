@@ -63,29 +63,38 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   /**
-   * update exist project information
+   * update exist project information with userID
    *
    * @param request, userID
-   * @return list project
+   * @return project
    */
   @Override
   public Project updateProject(UpdateProjectRequest request, User userID) {
     Optional<Project> optionalProject = projectRepository.findById(request.getProjectID());
-    logger.info("Optional project: {}", optionalProject);
+    logger.info("Find project by userID: {}", projectRepository.findProjectByUserID(userID));
 
     if (optionalProject.isPresent()) {
       Project project = optionalProject.get();
+      User findUserID = projectRepository.findUserIDByProjectID(project.getProjectID());
+      if (!userID.equals(findUserID)) {
+        logger.info("UserID: {}", userID);
+        logger.info("Find user id: {}", findUserID);
+        logger.error("Handler policy user update");
+        throw new IllegalArgumentException("Handler policy user update");
+      } else {
+        project.setProjectName(request.getName());
+        project.setProjectSlug(request.getSlug());
+        projectRepository.save(project);
 
-      project.setProjectName(request.getName());
-      project.setProjectSlug(request.getSlug());
-      projectRepository.save(project);
+        return project;
+      }
 
-      return project;
     }
+    logger.error("No exist project of the user ID: {}", userID);
     throw new IllegalArgumentException("Project not found with id: " + request.getProjectID());
   }
 
-  /**
+ /**
    * delete project from userID
    *
    * @param request, useID
