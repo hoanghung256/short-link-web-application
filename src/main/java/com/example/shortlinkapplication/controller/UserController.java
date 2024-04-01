@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
   @Autowired
-  private UserRepository userRepository;
   private static final Logger logger = LoggerFactory.getLogger(UserController.class);
   private final UserRepository userRepository;
   private final ProjectController projectController;
