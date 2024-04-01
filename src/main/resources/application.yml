@@ -61,9 +61,3 @@ app:
   oauth2:
     authorizedRedirectUri:
       - http://localhost:3000/api/redirect
-
-
-
-
-
-

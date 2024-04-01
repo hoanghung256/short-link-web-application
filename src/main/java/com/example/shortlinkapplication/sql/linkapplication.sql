@@ -96,5 +96,3 @@ CREATE TABLE [dbo].[confirm_token]
     userID INT,
     FOREIGN KEY (userID) REFERENCES [user_account](userID)
 );
-
-

@@ -94,7 +94,7 @@ public class ProjectServiceImpl implements ProjectService {
     throw new IllegalArgumentException("Project not found with id: " + request.getProjectID());
   }
 
-  /**
+ /**
    * delete project from userID
    *
    * @param request, useID
@@ -106,29 +106,21 @@ public class ProjectServiceImpl implements ProjectService {
     String slug = request.getSlug();
     String verify = request.getVerify();
 
-    Optional<Project> optionalProject = projectRepository.findById(projectID);
-
-    if (optionalProject.isEmpty()) {
+    // get slug => projectID
+    Optional<Project> optionalProject = projectRepository.findById(request.getProjectID());
+    if (optionalProject.isPresent()) {
+      Project project = optionalProject.get();
+      if (project.getProjectSlug().equals(slug) && verify.equals("confirm delete project")) {
+        projectRepository.deleteById(projectID);
+        logger.info("Get project list: {}", getListProject(userID));
+        return getListProject(userID);
+      } else {
+        throw new IllegalArgumentException(
+            "The request does not match the slug or verify string of project!");
+      }
+    } else {
       throw new IllegalArgumentException("The request does not match the slug of project!");
     }
-
-    Project project = optionalProject.get();
-
-    if (project.getProjectID() == null) {
-      logger.error("No exist project of the user ID: {}", userID);
-      throw new IllegalArgumentException("No exist project of the user ID: " + userID);
-    }
-
-    if (!project.getProjectSlug().equals(slug) || !verify.equals("confirm delete project")) {
-      throw new IllegalArgumentException(
-          "The request does not match the slug or verify string of project!");
-    }
-
-    projectRepository.deleteById(projectID);
-    List<Project> updatedProjectList = getListProject(userID);
-    logger.info("Get project list: {}", updatedProjectList);
-
-    return updatedProjectList;
   }
 
 }

@@ -1,6 +1,7 @@
 package com.example.shortlinkapplication.security;
 
 import com.example.shortlinkapplication.service.UserService;
+import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,41 +16,43 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
-    @Autowired
-    private TokenProvider tokenProvider;
-    @Autowired
-    private UserService customUserDetailsService;
-    private static final Logger logger = LoggerFactory.getLogger(TokenAuthenticationFilter.class);
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        try {
-            String jwt = getJwtFromRequest(request);
 
-            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                Integer userId = tokenProvider.getUserIdFromToken(jwt);
+  private static final Logger logger = LoggerFactory.getLogger(TokenAuthenticationFilter.class);
+  @Autowired
+  private TokenProvider tokenProvider;
+  @Autowired
+  private UserService customUserDetailsService;
 
-                UserDetails userDetails = customUserDetailsService.loadUserById(userId);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+      FilterChain filterChain)
+      throws ServletException, IOException, java.io.IOException {
+    try {
+      String jwt = getJwtFromRequest(request);
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        } catch (Exception ex) {
-            logger.error("Could not set user authentication in security context", ex);
-        }
+      if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+        Integer userId = tokenProvider.getUserIdFromToken(jwt);
 
-        filterChain.doFilter(request, response);
+        UserDetails userDetails = customUserDetailsService.loadUserById(userId);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+            userDetails, null, userDetails.getAuthorities());
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+      }
+    } catch (Exception ex) {
+      logger.error("Could not set user authentication in security context", ex);
     }
 
-    private String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        System.out.println(bearerToken);
-        return null;
+    filterChain.doFilter(request, response);
+  }
+
+  private String getJwtFromRequest(HttpServletRequest request) {
+    String bearerToken = request.getHeader("Authorization");
+    if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+      return bearerToken.substring(7);
     }
+    return null;
+  }
 }

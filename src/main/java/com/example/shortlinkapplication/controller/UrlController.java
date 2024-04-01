@@ -5,8 +5,11 @@ import com.example.shortlinkapplication.dto.url.UrlDeleteRequest;
 import com.example.shortlinkapplication.dto.url.UrlUpdateRequest;
 import com.example.shortlinkapplication.entity.Project;
 import com.example.shortlinkapplication.entity.Url;
+import com.example.shortlinkapplication.entity.User;
 import com.example.shortlinkapplication.repository.ProjectRepository;
 import com.example.shortlinkapplication.service.project.ProjectServiceImpl;
+import com.example.shortlinkapplication.security.CurrentUser;
+import com.example.shortlinkapplication.security.UserPrincipal;
 import com.example.shortlinkapplication.service.url.UrlServiceImpl;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -29,23 +32,28 @@ public class UrlController {
 
   private static final Logger logger = LoggerFactory.getLogger(UrlController.class);
   private final UrlServiceImpl urlService;
-  private final ProjectServiceImpl projectService;
   private final ProjectRepository projectRepository;
+  private final ProjectController projectController;
+
 
   @GetMapping("/get-url-list")
-  public List<Url> getUrlList(@PathVariable String projectSlug, @RequestParam Integer projectID) {
+  public List<Url> getUrlList(@PathVariable String projectSlug, @RequestParam Integer projectID,
+      @CurrentUser UserPrincipal userPrincipal) {
     logger.info("ProjectID: {}", projectID);
 
     Project project = projectRepository.findByProjectID(projectID);
     projectSlug = project.getProjectSlug();
 
+    User userID = projectController.getUser(userPrincipal);
     logger.info("Slug: {}", projectSlug);
-    return urlService.getListUrl(projectID);
+    return urlService.getListUrl(projectID, userID);
   }
 
   @PostMapping("create-short")
-  public Url convertToShortUrl(@RequestBody URLRequest request) {
-    return urlService.convertToShortUrl(request);
+  public Url convertToShortUrl(@RequestBody URLRequest request,
+      @CurrentUser UserPrincipal userPrincipal) {
+    User userID = projectController.getUser(userPrincipal);
+    return urlService.convertToShortUrl(request, userID);
   }
 
   @PutMapping("update-long-url")
@@ -54,8 +62,10 @@ public class UrlController {
   }
 
   @DeleteMapping("delete-url")
-  public List<Url> deleteUrl(@RequestBody UrlDeleteRequest request) {
-    return urlService.deleteUrl(request);
+  public List<Url> deleteUrl(@RequestBody UrlDeleteRequest request,
+      @CurrentUser UserPrincipal userPrincipal) {
+    User userID = projectController.getUser(userPrincipal);
+    return urlService.deleteUrl(request, userID);
   }
 
   @GetMapping("sort-by-create-date")
