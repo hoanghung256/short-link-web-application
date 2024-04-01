@@ -50,7 +50,7 @@ public class ProjectController {
     return projectService.updateProject(request, userID);
   }
 
-  @DeleteMapping("delete-project")
+  @DeleteMapping("/delete-project")
   public List<Project> deleteProject(@RequestBody DeleteProjectRequest request,
       @CurrentUser UserPrincipal userPrincipal) {
     User userID = getUser(userPrincipal);
