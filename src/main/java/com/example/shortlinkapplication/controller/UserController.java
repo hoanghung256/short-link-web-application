@@ -27,11 +27,4 @@ public class UserController {
         return userRepository.findById(userPrincipal.getId()).orElseThrow(() -> new RuntimeException(String.valueOf(userPrincipal.getId())));
     }
 
-    @CrossOrigin
-    @GetMapping("/home/{userID}")
-    @ResponseStatus(HttpStatus.OK)
-    public Principal user(@PathVariable Integer userID, Principal user) {
-        return user;
-    }
-
 }

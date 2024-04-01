@@ -57,7 +57,7 @@ public class ProjectController {
     return projectService.deleteProject(request, userID);
   }
 
-  private User getUser(UserPrincipal userPrincipal) {
+  public User getUser(UserPrincipal userPrincipal) {
     Integer userID = userPrincipal.getId();
     Optional<User> userOptional = userRepository.findById(userID);
 
