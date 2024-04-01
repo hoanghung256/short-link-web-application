@@ -87,7 +87,9 @@ CREATE TABLE [dbo].[confirm_token]
     [token] VARCHAR(MAX) NOT NULL,
     [created_at] DATETIME NOT NULL,
     [expired_at] DATETIME NOT NULL,
-    [confirmed_at] DATETIME NOT NULL
+    [confirmed_at] DATETIME NOT NULL,
+    userID INT
+    FOREIGN KEY (userID) REFERENCES [user](userID)
 );
 
 
