@@ -1,16 +1,6 @@
 server:
   port: 8080
 
-logging:
-  file:
-    path: /
-    name: short-link.log
-  level:
-    com:
-      example:
-        shortlinkapplication: debug
-
-
 springdoc:
   api-docs:
     path: /api-docs
@@ -20,14 +10,14 @@ springdoc:
 
 spring:
   datasource:
-    url: ${JDBC_DATABASE_URL:}
-    username: ${JDBC_DATABASE_USERNAME:}
-    password: ${JDBC_DATABASE_PASSWORD:}
+    url: jdbc:sqlserver://localhost:1433;databaseName=linkapplication;encrypt=true;trustServerCertificate=true
+    username: SA
+    password: 2562004
   mail:
     host: sandbox.smtp.mailtrap.io
     port: 2525
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
+    username: fbe41f25699c6f
+    password: a3604df884a0d1
     properties:
       mail:
         smtp:
@@ -39,15 +29,15 @@ spring:
       client:
         registration:
           google:
-            clientId: ${OAUTH2_GOOGLE_CLIENT_ID:}
-            clientSecret: ${OAUTH2_GOOGLE_CLIENT_SECRET:}
+            clientId: 148552102427-f9ssttqui8ek06lqbeh10ics96t0vm75.apps.googleusercontent.com
+            clientSecret: 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
             redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
             scope:
               - email
               - profile
           github:
-            clientId: ${OAUTH2_GITHUB_CLIENT_ID:}
-            clientSecret: ${OAUTH2_GITHUB_CLIENT_SECRET:}
+            clientId: 3087ab164dc570a1c72e
+            clientSecret: e8e512354b45a78e35b3240a29f5d0ab31193ca9
             redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
             scope:
               - user:email
@@ -55,10 +45,10 @@ spring:
 
 app:
   auth:
-    tokenSecret: ${APP_AUTH_TOKEN_SECRET:}
+    tokenSecret: 77baa86a5d41a865336dcda4859912ac600d7cd451dc959373e7bb63cf3ffb11
     tokenExpiration: 864000000
   cors:
     allowedOrigins: http://localhost:3000, http://localhost:8080
   oauth2:
     authorizedRedirectUri:
-      - http://localhost:3000/api/redirect
+      - http://localhost:3000/oauth2/redirect

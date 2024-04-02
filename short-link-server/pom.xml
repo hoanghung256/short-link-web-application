@@ -118,7 +118,7 @@
   <description>Demo project for Spring Boot</description>
   <groupId>com.example</groupId>
   <modelVersion>4.0.0</modelVersion>
-  <name>short-link-application</name>
+  <name>short-link-server</name>
   <parent>
     <artifactId>spring-boot-starter-parent</artifactId>
     <groupId>org.springframework.boot</groupId>

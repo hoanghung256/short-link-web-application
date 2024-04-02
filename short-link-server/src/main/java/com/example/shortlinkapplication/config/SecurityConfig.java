@@ -1,5 +1,6 @@
 package com.example.shortlinkapplication.config;
 
+import com.esotericsoftware.minlog.Log;
 import com.example.shortlinkapplication.repository.UserRepository;
 import com.example.shortlinkapplication.security.TokenAuthenticationFilter;
 import com.example.shortlinkapplication.security.oauth.CustomOAuth2UserService;
@@ -7,7 +8,9 @@ import com.example.shortlinkapplication.security.oauth.HttpCookieOAuth2Authoriza
 import com.example.shortlinkapplication.security.oauth.OAuth2AuthenticationFailureHandler;
 import com.example.shortlinkapplication.security.oauth.OAuth2AuthenticationSuccessHandler;
 import com.example.shortlinkapplication.service.UserService;
+
 import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
