@@ -19,6 +19,8 @@ import Logo from "../utils/Logo";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 function DashBoard() {
   const [projectList, setProjectList] = useState([]);
@@ -44,6 +46,12 @@ function DashBoard() {
 export default DashBoard;
 
 function ProjectList({ projectList, setIsCreated }) {
+  const navigate = useNavigate();
+
+  function goToProjectDashboard(project) {
+    navigate(`/${project.projectSlug}`, { state: { project: project } });
+  }
+
   return (
     <Box>
       <Box
@@ -68,75 +76,72 @@ function ProjectList({ projectList, setIsCreated }) {
           <Grid container spacing={3}>
             {projectList.map((project) => (
               <Grid item xs={12} sm={4} key={project.projectID} marginTop={2}>
-                <Link
-                  to={{
-                    pathname: `/${project.projectSlug}`,
-                    state: { project: project },
-                  }}
+                <Paper
+                  elevation={3}
+                  onClick={() => goToProjectDashboard(project)}
+                  sx={{ cursor: "pointer" }}
                 >
-                  <Paper elevation={3}>
-                    <Box padding={3}>
-                      <Box display="flex">
-                        <Avatar sx={{ bgcolor: "secondary.300" }}>
-                          {project.projectName.substring(0, 2).toUpperCase()}
-                        </Avatar>
-                        <Box marginLeft={2}>
-                          <Typography
-                            variant="h2"
-                            sx={{ fontSize: 20 }}
-                            color="primary.900"
-                          >
-                            {project.projectName}
-                          </Typography>
-                          <Typography
-                            variant="p"
-                            align="center"
-                            color="primary.700"
-                          >
-                            {project.domain}
-                          </Typography>
-                        </Box>
-                      </Box>
-                      <Box marginTop={4} display="flex" gap={1}>
+                  <Box padding={3}>
+                    <Box display="flex">
+                      <Avatar sx={{ bgcolor: "secondary.300" }}>
+                        {project.projectName.substring(0, 2).toUpperCase()}
+                      </Avatar>
+                      <Box marginLeft={2}>
+                        <Typography
+                          variant="h2"
+                          sx={{ fontSize: 20 }}
+                          color="primary.900"
+                        >
+                          {project.projectName}
+                        </Typography>
                         <Typography
                           variant="p"
-                          sx={{ fontSize: 18 }}
+                          align="center"
                           color="primary.700"
-                          display="flex"
-                          alignItems="center"
                         >
-                          <NetworkIcon /> 1 domains
-                        </Typography>{" "}
-                        <Typography
-                          variant="p"
-                          sx={{ fontSize: 18 }}
-                          color="primary.700"
-                          display="flex"
-                          alignItems="center"
-                        >
-                          <LinkIcon />
-                          {project.totalLink !== null
-                            ? project.totalLink
-                            : 0}{" "}
-                          links
-                        </Typography>{" "}
-                        <Typography
-                          variant="p"
-                          sx={{ fontSize: 18 }}
-                          color="primary.700"
-                          display="flex"
-                          alignItems="center"
-                        >
-                          <StatisticBarIcon />
-                          {project.totalClick !== null
-                            ? project.totalClick
-                            : 0}{" "}
-                          click
+                          {project.domain}
                         </Typography>
                       </Box>
                     </Box>
-                  </Paper>
-                </Link>
+                    <Box marginTop={4} display="flex" gap={1}>
+                      <Typography
+                        variant="p"
+                        sx={{ fontSize: 18 }}
+                        color="primary.700"
+                        display="flex"
+                        alignItems="center"
+                      >
+                        <NetworkIcon /> 1 domains
+                      </Typography>{" "}
+                      <Typography
+                        variant="p"
+                        sx={{ fontSize: 18 }}
+                        color="primary.700"
+                        display="flex"
+                        alignItems="center"
+                      >
+                        <LinkIcon />
+                        {project.totalLink !== null
+                          ? project.totalLink
+                          : 0}{" "}
+                        links
+                      </Typography>{" "}
+                      <Typography
+                        variant="p"
+                        sx={{ fontSize: 18 }}
+                        color="primary.700"
+                        display="flex"
+                        alignItems="center"
+                      >
+                        <StatisticBarIcon />
+                        {project.totalClick !== null
+                          ? project.totalClick
+                          : 0}{" "}
+                        click
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Paper>
               </Grid>
             ))}
           </Grid>
@@ -157,9 +162,17 @@ function CreateProject({ setIsCreated }) {
       "http://localhost:8080/dashboard/create-project",
       data
     );
-    console.log(res.data);
-    setIsCreated(true);
-    handleClose();
+
+    if (
+      res.data.projectName === data.name &&
+      res.data.projectSlug === data.slug
+    ) {
+      toast.success("Create new project success");
+      setIsCreated(true);
+      handleClose();
+    } else {
+      toast.error("Create new project failed");
+    }
   };
 
   const handleChange = (event) => {
